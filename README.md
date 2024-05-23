@@ -15,19 +15,47 @@ To evaluate your models on the full `FinanceBench` dataset, or if you have quest
 ---
 
 **Dataset Overview:**
-The provided open-source dataset (n=150) consists of the following attributes:
+The provided open-source dataset (n=150) consists of two JSONL files (located in `/data/`):
 
+
+**`financebench_open_source.jsonl`**:
+```text
+    - financebench_id (int):            Unique identifier of the question
+    - question (str):                   Question of interest
+    - answer (str):                     Human-annotated gold answer
+    - dataset_subset_label (str):       Label to identify in which data subset the question is present ("OPEN_SOURCE" or "CLOSED_SOURCE")
+    - evidence (list[dict])             List of EvidenceDict's. 
+    - question_type (str)               Type of Question: 'metrics-generated', 'domain-relevant', 'novel-generated' 
+    - question_reasoning (str)          Reasoning Type needed to solve the question
+    - justification (str)               Human-Annotated justification of the gold answer
+    - doc_name (str)                    Unique Document Identifier. Format: {COMPANY}_{PERIOD}_{TYPE}. Some exceptions have the format {COMPANY}_{PERIOD}_{TYPE}_dated-{DATE}
+
+
+    Each EvidenceDict contains four fields: 
+        - "evidence_text" (str):            Extracted evidence text from annotators (sentence, paragraph or page) 
+        - "evidence_doc_name" (str):        Unique Document Identifier of the relevant document containing the evidence
+        - "evidence_page_num" (int):        Page number of the evidence text (ZERO-indexed)
+        - "evidence_text_full_page" (str):  Full page extract containing the evidence text
+ ```
+
+**`financebench_document_information.jsonl`**:
+```text
+    - doc_name (str)            Unique Document Identifier. Format: {COMPANY}_{PERIOD}_{TYPE}
+    - doc_type (str)            Type of the Document: {"10K", "10Q", "8K", "EARNINGS", "10K_ANNUAL"}
+    - doc_period (int)          Period of the relevant financial document
+    - doc_link (str)            URL of the relevant document
+    - company (str)             Company 
+    - comany_sector_gics (str)  Company Sector in terms of GICS standard
 ```
-    - financebench_id:  unique question identifier  
-    - question:         question of interest
-    - answer:           gold answer
-    - question_type:    type of the question {domain-relevant, metrics-generated, novel-generated}
-    - doc_name:         name of the relevant financial document to answer the question
-    - doc_link:         url to retrieve the relevant financial document
-    - doc_period:       period of the relevant financial document
-    - evidence_text:    extracted evidence text
-    - page_number       page number(s) of evidence text
+
+The above two files can be loaded and joined using:
+```python
+df_questions = pd.read_json("data/financebench_open_source.jsonl", lines=True)
+df_meta = pd.read_json("data/inancebench_document_information.jsonl", lines=True)
+df_full = pd.merge(df_questions, df_meta, on="doc_name")
 ```
+
+The relevant financial source documents (PDFS) are located in `/pdfs/`
 
 ---
 

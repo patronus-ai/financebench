@@ -1,0 +1,1 @@
+Folder where Vector-Databases are saved
