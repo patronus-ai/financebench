@@ -25,9 +25,11 @@ The provided open-source dataset (n=150) consists of two JSONL files (located in
     - answer (str):                     Human-annotated gold answer
     - dataset_subset_label (str):       Label to identify in which data subset the question is present ("OPEN_SOURCE" or "CLOSED_SOURCE")
     - evidence (list[dict])             List of EvidenceDict's. 
+    - justification (str)               Human-Annotated justification of the gold answer
     - question_type (str)               Type of Question: 'metrics-generated', 'domain-relevant', 'novel-generated' 
     - question_reasoning (str)          Reasoning Type needed to solve the question
-    - justification (str)               Human-Annotated justification of the gold answer
+    - domain_question_num (str)         ID of domain-relevant questions (`dg01` to `dg25`), "None" for 'metrics-generated' and 'novel-generated' questions
+    - company (str)                     Company of Interest
     - doc_name (str)                    Unique Document Identifier. Format: {COMPANY}_{PERIOD}_{TYPE}. Some exceptions have the format {COMPANY}_{PERIOD}_{TYPE}_dated-{DATE}
 
 
@@ -51,11 +53,13 @@ The provided open-source dataset (n=150) consists of two JSONL files (located in
 The above two files can be loaded and joined using:
 ```python
 df_questions = pd.read_json("data/financebench_open_source.jsonl", lines=True)
-df_meta = pd.read_json("data/inancebench_document_information.jsonl", lines=True)
+df_meta = pd.read_json("data/financebench_document_information.jsonl", lines=True)
 df_full = pd.merge(df_questions, df_meta, on="doc_name")
 ```
 
 The relevant financial source documents (PDFS) are located in `/pdfs/`
+
+In addition, we provide the human-annotated model completions of the evaluated model configurations in the paper of the open-source dataset in `/results/`
 
 ---
 
